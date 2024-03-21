@@ -93,7 +93,7 @@ export class ProjectsManager {
     input.click()
   }
 }
-
+// comentario para git
 const btnProyectos = document.getElementById("projects-btn")
 if (btnProyectos) {
   btnProyectos.addEventListener("click", () => {
