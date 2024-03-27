@@ -293,3 +293,95 @@ input:focus, textarea:focus, select:focus {
 #error-message {
     color: white;
 }
+
+.project-icon {
+    font-size: 20px;
+    background-color: #ca8134;
+    border-radius: 100%;
+    padding: 12px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+  }
+  
+  /* Edit modal */
+#edit-project-modal {
+    background-color: transparent;
+    border: none;
+    margin: auto;
+    box-shadow: 0 0 100px rgba(0, 0, 0, 0.8); 
+}
+
+#edit-project-modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+
+#edit-project-form {
+    width: 450px;
+    border-radius: 10px;
+    background-color: var(--background-100);
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#edit-project-form h2 {
+    padding: 20px;
+    border-bottom: 2px solid var(--background-200);
+}
+
+#edit-project-form .input-list {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    row-gap: 25px;
+}
+
+#edit-project-form .form-field-container {
+    display: flex;
+    flex-direction: column;
+}
+
+#edit-project-form label {
+    font-size: var(--font-base);
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: rgb(241, 241, 241);
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+}
+
+#edit-project-form input,
+#edit-project-form textarea,
+#edit-project-form select {
+    color: white;
+    background-color: var(--background-200);
+    padding: 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: var(--font-base);
+}
+
+#edit-project-form input:focus,
+#edit-project-form textarea:focus,
+#edit-project-form select:focus {
+    outline: 2px solid var(--primary);
+}
+
+#errorMessage{
+    background-color:var(--background-300);
+    padding: 1rem;
+    border-radius: 5px;
+    display: block;
+    text-align: center; 
+    border: 2px solid #ccc;
+}
+
+#errorMessage .material-icons-round {
+    margin-right: 10px; 
+    background-color: red;
+    border-radius: 1rem
+}

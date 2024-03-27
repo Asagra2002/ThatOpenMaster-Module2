@@ -17,6 +17,13 @@
   </aside>
   <main id="content">
     <div class="page" id="projects-page" style="display: flex;">
+      <dialog id="error">
+          <div id="errorMessage">
+              <span style="color: beige;" class="material-icons-round "> priority_high</span>
+              <p id="err"> ERROR:</p>
+              <button id="error-btn">Close</button>
+          </div>
+      </dialog>
       <dialog id="new-project-modal">
         <form id = "new-project-form">
           <h2>New Project</h2>
@@ -71,7 +78,7 @@
       <div id="projects-list">
         <div class="project-card">
           <div class="card-header">
-            <p style="background-color: #ca8134; padding: 10px; border-radius: 8px; aspect-ratio: 1;">HC</p>
+            <p style="font-size: 20px; background-color: #ca8134; aspect-ratio: 1; border-radius: 100%; padding: 12px;">HC</p>
             <div>
               <h5>Project Name</h5>
               <p>Project Description Goes Here...</p>
@@ -99,6 +106,60 @@
       </div>
     </div>
     <div class="page" id="project-details" style="display: none">
+
+
+      <!-- EDIT PROJECT -->
+  <dialog id="edit-project-modal" class="edit-modal" >
+      <form id="edit-project-form">
+          <h2>Edit Project</h2>
+          <div class="input-list">
+              <div class="form-field-container">
+                  <label><span class="material-icons-round">apartment</span>Name</label>
+                  <input name="nameEdit" type="text">
+                  <p style="color: gray; font-size: var(--font-sm); margin-top: 5px; font-style: italic;">TIP: Give it a short name</p>
+              </div>
+
+              <div class="form-field-container">
+                  <label><span class="material-icons-round">subject</span>Description</label>
+                  <textarea name="descriptionEdit" cols="30" rows="5" ></textarea>
+              </div>
+              <div class="form-field-container">
+                  <label><span class="material-icons-round">person</span>userRole</label>
+                  <select name ="userRoleEdit">
+                      <option>Architect</option>
+                      <option>Engineer</option>
+                      <option>Developer</option>
+                  </select>
+              </div>
+              <div class="form-field-container">
+                  <label><span class="material-icons-round">not_listed_location</span>Status</label>
+                  <select name="statusEdit">
+                      <option>Pending</option>
+                      <option>Active</option>
+                      <option>Finished</option>
+                  </select>
+              </div>
+              <div class="form-field-container">
+                  <label for="finishDateEdit">
+                  <span class="material-icons-round">calendar_month</span>
+                  Finish Date
+                  </label>
+                  <input name="finishDate" type="date" ></input>
+              </div>
+              <div class="form-field-container">
+                  <label><span class="material-icons-round">euro</span>Cost</label>
+                  <input name="coste" type="text" ></input>
+              </div>
+              <div style="display: flex; margin: 10px 0px 10px auto; column-gap: 10px;">
+                  <!-- <button id="cancela-btn" type="button">Cancela</button> -->
+                  <button id="cancelEdit" type="button">Cancel</button>
+                  <!-- <button type="submit">Acepta</button> -->
+                  <button id="acceptEdit" type="button">Accept</button>
+              </div>
+          </div> 
+      </form>
+  </dialog>
+<!--EDIT PROJECT -->
       <header>
         <div>
           <h2 data-project-info="name">Hospital Center</h2>
@@ -109,7 +170,7 @@
         <div style="display: flex; flex-direction: column; row-gap: 30px;">
           <div class="dashboard-card" style="padding: 30px 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 0px 30px; margin-bottom: 30px;">
-              <p style="font-size: 20px; background-color: #ca8134; aspect-ratio: 1; border-radius: 100%; padding: 12px;">HC</p>
+              <p data-project-info="project-icon" style="font-size: 20px; background-color: #ca8134; aspect-ratio: 1; border-radius: 100%; padding: 12px;">HC</p>
               <button class="btn-secondary"><p style="width: 100%;">Edit</p></button>
             </div>
             <div style="padding: 0 30px;">
