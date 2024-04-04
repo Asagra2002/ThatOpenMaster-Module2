@@ -72,10 +72,39 @@ button:hover{
     background-color: var(--primary-400);
 }
 
+#error{
+    color:white
+}
+
+#errorMessage{
+    background-color:var(--background-200);
+    padding: 1rem;
+    border-radius: 5px;
+    display: block;
+    text-align: center; 
+    border: 2px solid #ccc;
+}
+
+#errorMessage .material-icons-round { 
+    background-color: var(--primary);
+    border-radius: 1rem
+}
+
+#btnError {
+    display: block; 
+    margin: auto; 
+}
+
 .page {
     display: flex;
     flex-direction: column;
     height: 100%;
+}
+#btnError{
+    display: block;
+    margin:auto;
+    margin-top: 1rem;
+    
 }
 
 /* Sidebar styles */
@@ -107,7 +136,15 @@ button:hover{
     cursor: pointer;
     display: flex;
     align-items: center;
-    column-gap: 5px;
+    column-gap: 15px;
+    width: 90%;
+}
+
+ul#nav-buttons{
+    display: flex; 
+    align-items:flex-start;
+    justify-content: space-between; 
+    list-style: none;
 }
 
 #nav-buttons li:hover{
@@ -116,8 +153,7 @@ button:hover{
 /* Content styles */
 
 #content {
-    
-    
+    background-color: var(--bacground-100);
 }
 
 header {
@@ -162,11 +198,12 @@ header {
     width: 100%;
 }
 
-#projects-list {
+#project-list{
     display: grid;
     padding: 20px 40px;
     gap: 30px;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill,minmax(350px, 1fr));
+    grid-gap: 10px;
 }
 
 /* Form styles */
@@ -184,7 +221,7 @@ dialog::backdrop {
 
 
 form {
-    width: 450px;
+    width: 400px;
     border-radius: 10px;
     background-color: var(--background-100);
     color: white;
@@ -230,6 +267,73 @@ input:focus, textarea:focus, select:focus {
     outline: 2px solid var(--primary);
 }
 
+/* Edit modal */
+#edit-project-modal {
+    background-color: transparent;
+    border: none;
+    margin: auto;
+    box-shadow: 0 0 100px rgba(0, 0, 0, 0.8); 
+}
+
+#edit-project-modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+
+#edit-project-form {
+    width: 450px;
+    border-radius: 10px;
+    background-color: var(--background-100);
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+#edit-project-form h2 {
+    padding: 20px;
+    border-bottom: 2px solid var(--background-200);
+}
+
+#edit-project-form .input-list {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    row-gap: 25px;
+}
+
+#edit-project-form .form-field-container {
+    display: flex;
+    flex-direction: column;
+}
+
+#edit-project-form label {
+    font-size: var(--font-base);
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: rgb(241, 241, 241);
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+}
+
+#edit-project-form input,
+#edit-project-form textarea,
+#edit-project-form select {
+    color: white;
+    background-color: var(--background-200);
+    padding: 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: var(--font-base);
+}
+
+#edit-project-form input:focus,
+#edit-project-form textarea:focus,
+#edit-project-form select:focus {
+    outline: 2px solid var(--primary);
+}
+
+
 /* Project details page*/
 
 .dashboard-card {
@@ -268,30 +372,6 @@ input:focus, textarea:focus, select:focus {
 
 .todo-item:hover{
     background-color: var(--primary);
-}
-#error-message-modal {
-    background-color: var(--background-100);
-    width: 450px;
-    padding: 15px;
-    border-radius: 10px;
-    outline: 2px solid var(--primary);
-}
-
-#error-message-modal h2 {
-    color: var(--primary);
-    border-bottom: 1px solid var(--background);
-}
-
-#error-message-modal button{
-    background-color: var(--primary);
-}
-
-.form-error-message {
-    padding: 10px;
-}
-
-#error-message {
-    color: white;
 }
 
 .project-icon {
@@ -369,19 +449,4 @@ input:focus, textarea:focus, select:focus {
 #edit-project-form textarea:focus,
 #edit-project-form select:focus {
     outline: 2px solid var(--primary);
-}
-
-#errorMessage{
-    background-color:var(--background-300);
-    padding: 1rem;
-    border-radius: 5px;
-    display: block;
-    text-align: center; 
-    border: 2px solid #ccc;
-}
-
-#errorMessage .material-icons-round {
-    margin-right: 10px; 
-    background-color: red;
-    border-radius: 1rem
 }
