@@ -137,34 +137,21 @@ export class ProjectManager {
     }
 
     
-    exportToJSON(fileName: string = "projects"): void {
-        const exportedProjects: ExportedProject[] = [];
-
-        this.list.forEach((project) => {
-            const exportedProject: ExportedProject = {
-                project: {
-                    name: project.name,
-                    description: project.description,
-                },
-                todos: project.todos,
-            };
-    
-            exportedProjects.push(exportedProject);
-        });
-
-        const json = JSON.stringify(this.list, null, 2);
-    
-        const blob = new Blob([json], { type: 'application/json' });
-    
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-    
-        a.click();
-    
-        URL.revokeObjectURL(url);
-    }
+    exportToJSON(fileName: string = "projects") {
+        function replacer (key, value) {
+          if (key !== "ui"){
+            return value;
+          }
+        }
+      const json = JSON.stringify(this.list, replacer, 2)
+      const blob = new Blob([json], { type: 'application/json' })
+      const url =  URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = fileName
+      a.click()
+      URL.revokeObjectURL(url)
+     }
 
     
     importToJSON(): void {

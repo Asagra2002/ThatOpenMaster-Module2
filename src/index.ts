@@ -9,7 +9,7 @@ function showModal(id: string): void {
         console.warn("The provided modal was not found. ID: ", id);
     }
 }
-
+       
 function closeModal(id: string): void {
     const modal = document.getElementById(id);
     if (modal && modal instanceof HTMLDialogElement) {
@@ -22,7 +22,7 @@ function closeModal(id: string): void {
 const projectListUI = document.getElementById("project-list") as HTMLElement;
 const projectManager = new ProjectManager(projectListUI);
 
-const newProjectBtn = document.getElementById("new-proyect-btn");
+const newProjectBtn = document.getElementById("new-project-btn");
 if (newProjectBtn) {
     newProjectBtn.addEventListener("click", () => { showModal("new-project-modal"); });
 } else {
