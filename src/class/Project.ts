@@ -112,6 +112,7 @@ export class Project implements IProject{
                         userRole: this.userRole,
                         status: this.status,
                         finishDate: this.finishDate,
+                        todos: this.todos 
                 };
         }
 

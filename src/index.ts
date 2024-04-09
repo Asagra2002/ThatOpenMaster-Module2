@@ -56,6 +56,7 @@ if (projectForm && projectForm instanceof HTMLFormElement) {
             userRole: formData.get("userRole") as UserRole,
             status: formData.get("status") as ProjectStatus,
             finishDate: finishDate,
+            todos: []
         };
         try {
             const project = projectManager.newProject(projectData);
@@ -208,8 +209,8 @@ if (btnCancelEdit && btnAcceptEdit) {
 
                 currentProject.name = editProjectNameInput.value;
                 currentProject.description = editProjectDescriptionInput.value;
-                currentProject.status = editProjectStatusInput.value;
-                currentProject.userRole = editProjectRoleInput.value;
+                currentProject.status = editProjectStatusInput.value as ProjectStatus;
+                currentProject.userRole = editProjectRoleInput.value as UserRole;
                 currentProject.finishDate = new Date(editProjectFinishdateInput.value);
                 currentProject.cost = parseFloat(editProjectCostInput.value);
                 closeModal("edit-project-modal");
@@ -227,7 +228,7 @@ const btnAddTodo = document.getElementById('add-todo-btn');
 
 if (btnAddTodo) {
     btnAddTodo.addEventListener('click', () => {
-        const todoDescriptionInput = document.getElementById("todo-description");
+        const todoDescriptionInput = document.getElementById("todo-description") as HTMLInputElement;
         const todoListElement = document.getElementById("todo-list");
 
         if (todoDescriptionInput && todoListElement) {
@@ -244,7 +245,7 @@ if (btnAddTodo) {
                     completed: false,
                 };
 
-                currentProject.addTodo(newTodo);
+                currentProject.addTodo(newTodo.description);
 
                 todoDescriptionInput.value = "";
 
@@ -282,7 +283,7 @@ function updateTodoList(todos: IToDo[], todoListElement: HTMLElement): void {
         });
 
         const description = document.createElement("p");
-        description.textContent = todo.description.description;
+        description.textContent = todo.description;
 
         const date = document.createElement("p");
         date.style.marginLeft = "10px";

@@ -1,4 +1,4 @@
-import { IProject, Project } from "./Project";
+import { IProject, Project, IToDo } from "./Project";
 import { updateTodoList } from '../index';
 
 export interface ExportedProject {
@@ -108,7 +108,7 @@ export class ProjectManager {
         const todoListElement = detailsPage.querySelector("#todo-list");
 
         if (todoListElement) {
-            updateTodoList(project.todos, todoListElement);
+            updateTodoList(project.todos, todoListElement as HTMLElement);
         }
     }
 
@@ -230,5 +230,3 @@ export class ProjectManager {
    
 
 }
-
-
