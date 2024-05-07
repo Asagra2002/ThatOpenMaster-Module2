@@ -363,15 +363,27 @@ input:focus, textarea:focus, select:focus {
     outline: none;
 }
 
+#add-todo-btn {
+    background-color: transparent;
+    outline: 2px solid #969696;
+    width: 55px;
+    text-align: center;
+}
+
+#add-todo-btn:hover {
+    background-color: var(--primary);
+    outline: none;
+}
 .todo-item {
     padding: 20px;
-    background-color: var(--background-200);
+    outline: 2px solid var(--background-200);
     border-radius: 10px;
     cursor: pointer;
 }
 
 .todo-item:hover{
-    background-color: var(--primary);
+    background-color: #26282B;
+    outline: 2px solid var(--primary);
 }
 
 .project-icon {

@@ -9,7 +9,7 @@ export interface IProject{
         status:ProjectStatus
         userRole: UserRole
         finishDate: Date  
-        todos: IToDo[];
+
 }
 
 
@@ -25,7 +25,7 @@ export class Project implements IProject{
         progress: number=0
         id:string
 
-        todos: IToDo[] = [];
+
 
         constructor(data: IProject){
                 // for(const key in data){
@@ -112,32 +112,8 @@ export class Project implements IProject{
                         userRole: this.userRole,
                         status: this.status,
                         finishDate: this.finishDate,
-                        todos: this.todos 
+                 
                 };
-        }
-
-
-        addTodo(description: string): void {
-                const todo: IToDo = {
-                        id: uuidv4(),
-                        description: description,
-                        completed: false,
-                };
-                this.todos.push(todo);
-                this.updateUI();
-        }
-
-        deleteTodo(todoId: string): void {
-                this.todos = this.todos.filter((todo) => todo.id !== todoId);
-                this.updateUI(); 
-        }
-        
-        updateTodoStatus(todoId: string, completed: boolean): void {
-                const todo = this.todos.find((todo) => todo.id === todoId);
-                if (todo) {
-                        todo.completed = completed;
-                        this.updateUI(); 
-                }
         }
 
 }
@@ -152,9 +128,3 @@ function getRandomColor() {
         return color;
 }
 
-
-export interface IToDo {
-        id: string;
-        description: string;
-        completed: boolean;
-}

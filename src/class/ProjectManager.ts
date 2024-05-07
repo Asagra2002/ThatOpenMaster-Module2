@@ -1,9 +1,8 @@
-import { IProject, Project, IToDo } from "./Project";
-import { updateTodoList } from '../index';
+import { IProject, Project } from "./Project";
 
 export interface ExportedProject {
     project: IProject;
-    todos: IToDo[];
+    
 }
 
 export class ProjectManager {
@@ -12,6 +11,16 @@ export class ProjectManager {
 
     constructor(container: HTMLElement) {
         this.ui = container;
+        const project = this.newProject({
+            name: "Default Project",
+            description: "This is just a default app project",
+            status: "Pending",
+            userRole: "Architect",
+            finishDate: new Date(),
+        
+            
+        })
+        project.ui.click()
     }
     
     newProject(data: IProject): Project {
@@ -105,11 +114,6 @@ export class ProjectManager {
         const iniciales= detailsPage.querySelector("[data-project-info='iniciales']");
         if(iniciales){iniciales.textContent=project.name.slice(0, 2).toUpperCase()}
 
-        const todoListElement = detailsPage.querySelector("#todo-list");
-
-        if (todoListElement) {
-            updateTodoList(project.todos, todoListElement as HTMLElement);
-        }
     }
 
     getProject(id: string): Project | undefined {

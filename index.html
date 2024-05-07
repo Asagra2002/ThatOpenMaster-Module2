@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="components.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -205,21 +207,23 @@
                   <span class="material-icons-round">search</span>
                   <input type="text" placeholder="Search To-Do's by name" style="width: 100%;">
                 </div>
-              </div>
-            </div>
-            <div style="display: flex; flex-direction: column; padding: 10px 30px; row-gap:20px;">
-              <div style="display: flex; gap: 25px; align-items: center; justify-content: center;">
-                <span class="material-icons-round" style="padding: 10px; background-color: #686868; border-radius: 10px;">construction</span>
-                <input type="text" id="todo-description" placeholder="Enter TO-DO description">
                 <button id="add-todo-btn" type="button">Add</button>
               </div>
             </div>
             <div style="display: flex; flex-direction: column; padding: 10px 30px; row-gap: 20px;">
-              <div class="todo-item" id="todo-list"></div>
+              <div class="todo-item">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="display: flex; column-gap: 15px; align-items: center;">
+                    <span class="material-icons-round" style="padding: 10px; background-color: #686868; border-radius: 10px;">construction</span>
+                    <p>Make anything here as you want, even something longer.</p>
+                  </div>
+                  <p style="text-wrap: nowrap; margin-left: 10px;">Fri, 20 sep</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div id="viewer-container" class="dashboard-card"></div>
+        <div id="viewer-container" class="dashboard-card" style = "min-width: 0; position: relative"></div>
       </div>
     </div>
   </main>
