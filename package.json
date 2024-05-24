@@ -10,10 +10,17 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/three": "0.156.0",
     "typescript": "^5.4.2",
     "vite": "^5.1.6"
   },
   "dependencies": {
-    "uuid": "^9.0.1"
+    "@tweenjs/tween.js": "^23.1.2",
+    "bim-fragment": "1.0.22",
+    "firebase": "^10.11.1",
+    "openbim-components": "1.1.5",
+    "three": "0.152.2",
+    "uuid": "^9.0.1",
+    "web-ifc": "0.0.44"
   }
 }
