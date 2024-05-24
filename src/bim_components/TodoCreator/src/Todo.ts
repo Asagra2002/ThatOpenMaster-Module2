@@ -9,7 +9,6 @@ export type TodoPriority = "Low" | "Normal" | "High";
 export class ToDo extends OBC.Component<ToDo> implements OBC.Disposable {
   enabled: boolean = true;
   private _components: OBC.Components;
-  //Own Properties
   id: string = generateUUID();
   description: string;
   date: Date = new Date();
