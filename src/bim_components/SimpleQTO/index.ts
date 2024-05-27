@@ -1,164 +1,218 @@
 import * as OBC from "openbim-components"
 import * as WEBIFC from "web-ifc"
 import { FragmentsGroup } from "bim-fragment"
+import { QtoQuery } from "./src/QtoQuery.ts"
 
 type QtoResult = { [setName: string]: { [qtoName: string]: number } };
 
-export class SimpleQTO extends OBC.Component<QtoResult> implements OBC.UI, OBC.Disposable {
+export class SimpleQto extends OBC.Component<QtoResult> implements OBC.UI, OBC.Disposable {
     static uuid = "7e8bd617-75df-4370-a4ba-e91680e04806"
-    enabled = true
-    private _components: OBC.Components
-    private _qtoResult: QtoResult = {}
-    uiElement = new OBC.UIElement<{
-        activationBtn: OBC.Button
-        qtoList: OBC.FloatingWindow
-    }>()
+    private _components: OBC.Components;
+  private _qtoResult: QtoResult = {};
+  enabled = true;
+  uiElement = new OBC.UIElement<{
+    activationBtn: OBC.Button;
+    qtoList: OBC.FloatingWindow;
+  }>();
 
-    constructor(components: OBC.Components) {
-        super(components)
-        this._components = components;
-        this.setUI()
-    }
+  constructor(components: OBC.Components) {
+    super(components);
+    this._components = components;
+    components.tools.add(SimpleQto.uuid, this);
+    this.setUi();
+  }
 
-    async setup() {
-        const highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
-        highlighter.events.select.onHighlight.add((FragmentIdMap) => {
-            this.sumQuantities(FragmentIdMap)
-        })
-        highlighter.events.select.onHighlight.add(() => {
-            this.resetQuantities()
-        })
-    }
+  async setup() {
+    const highlighter = await this.components.tools.get(
+      OBC.FragmentHighlighter
+    );
+    highlighter.events.select.onHighlight.add(async (fragmentIdMap) => {
+      await this.resetQuantities();
+      //await this.sumQuantities(fragmentIdMap);
+      await this.sumQuantitiesV2(fragmentIdMap);
+    });
 
-    resetQuantities() {
-        this._qtoResult = {}
-    }
+    highlighter.events.select.onClear.add(async () => {
+      await this.resetQuantities();
+    });
+  }
 
-    private setUI() {
-        const activationBtn = new OBC.Button(this._components)
-        activationBtn.materialIcon = "functions"
+  private setUi() {
+    const activationBtn = new OBC.Button(this._components);
+    activationBtn.materialIcon = "functions";
 
-        const qtoList = new OBC.FloatingWindow(this._components)
-        qtoList.title = "Quantities "
-        this._components.ui.add(qtoList)
-        qtoList.visible = false
+    const qtoList = new OBC.FloatingWindow(this._components);
+    qtoList.title = "Quantifications";
+    this._components.ui.add(qtoList);
+    qtoList.visible = false;
 
-        activationBtn.onClick.add(() => {
-            activationBtn.active = !activationBtn.active
-            qtoList.visible = activationBtn.active
-        })
+    activationBtn.onClick.add(() => {
+      activationBtn.active = !activationBtn.active;
+      qtoList.visible = activationBtn.active;
+    });
 
-        this.uiElement.set({ activationBtn, qtoList })
-    }
+    qtoList.onHidden.add(() => {
+      activationBtn.active = false;
+    });
+    this.uiElement.set({ activationBtn, qtoList });
+  }
 
-    async updateUI() {
-        await this.resetQtoUI()
-        const qtoList = this.uiElement.get("qtoList")
-        const treeLevel1Items = Object.keys(this._qtoResult)
-        for (const qtoEntity of treeLevel1Items) {
-            const tree = new OBC.TreeView(this._components, qtoEntity)
-            tree.name = qtoEntity
-            const qtoItems = this._qtoResult[qtoEntity]
-            for (const qtoItem in qtoItems) {
-                const value = qtoItems[qtoItem]
-                const qtoRecord = new OBC.SimpleUIComponent(this._components)
-                qtoRecord.get().innerHTML = `${qtoItem}: ${value.toFixed(3)}`
-                tree.addChild(qtoRecord)
+  async resetQuantities() {
+    this._qtoResult = {};
+    await this.uiElement.get("qtoList").slots.content.dispose(true);
+  }
+
+  async sumQuantities(fragmentIdMap: OBC.FragmentIdMap) {
+    console.time("Qto summary V1");
+    const fragmentManager = await this._components.tools.get(
+      OBC.FragmentManager
+    );
+    for (const fragmentId in fragmentIdMap) {
+      const fragment = fragmentManager.list[fragmentId];
+      const model = fragment.mesh.parent;
+      if (!(model instanceof FragmentsGroup && model.properties)) {
+        continue;
+      }
+      const properties = model.properties;
+      OBC.IfcPropertiesUtils.getRelationMap(
+        properties,
+        WEBIFC.IFCRELDEFINESBYPROPERTIES,
+        (setID, relatedID) => {
+          const set = properties[setID];
+          const expressIDs = fragmentIdMap[fragmentId];
+          const workingIDs = relatedID.filter((id) =>
+            expressIDs.has(id.toString())
+          );
+          const { name: setName } = OBC.IfcPropertiesUtils.getEntityName(
+            properties,
+            setID
+          );
+          if (
+            set.type !== WEBIFC.IFCELEMENTQUANTITY ||
+            workingIDs.length === 0 ||
+            !setName
+          ) {
+            return;
+          }
+          if (!(setName in this._qtoResult)) this._qtoResult[setName] = {};
+          OBC.IfcPropertiesUtils.getQsetQuantities(
+            properties,
+            setID,
+            (qtoID) => {
+              const { name: qtoName } = OBC.IfcPropertiesUtils.getEntityName(
+                properties,
+                qtoID
+              );
+              const { value } = OBC.IfcPropertiesUtils.getQuantityValue(
+                properties,
+                qtoID
+              );
+              if (!qtoName || !value) {
+                return;
+              }
+              if (!(qtoName in this._qtoResult[setName])) {
+                this._qtoResult[setName][qtoName] = 0;
+              }
+              this._qtoResult[setName][qtoName] += value;
             }
-            qtoList.addChild(tree)
+          );
         }
+      );
     }
+    this.createTree();
+    console.timeEnd("Qto summary V1");
+  }
 
-    async resetQtoUI() {
-        const qtoList = this.uiElement.get("qtoList")
-        qtoList.get().children[1].innerHTML = ""
-    }
-
-    async updateQtoUI() {
-        const qtoList = this.uiElement.get("qtoList")
-        await qtoList.slots.content.dispose(true)
-        const qtoTemplate = `
-              <div>
-              <p id="qto" style="color: rgb(180, 180, 180)">Sample: 0</p>
-              </div>
-          `
-        for (const setName in this._qtoResult) {
-            const qtoGroup = new OBC.TreeView(this._components)
-            qtoGroup.slots.content.get().style.rowGap = "4px"
-            qtoGroup.title = setName;
-            qtoList.addChild(qtoGroup)
-            const qtos = this._qtoResult[setName]
-            for (const qtoName in qtos) {
-                const value = qtos[qtoName]
-                const ui = new OBC.SimpleUIComponent(this._components, qtoTemplate)
-                ui.get().style.display = "flex"
-                const qtoElement = ui.getInnerElement("qto") as HTMLParagraphElement
-                qtoElement.textContent = `${qtoName}: ${value.toFixed(2)}`
-                qtoGroup.addChild(ui)
-            }
+  async sumQuantitiesV2(fragmentIdMap: OBC.FragmentIdMap) {
+    const fragmentManager = await this._components.tools.get(
+      OBC.FragmentManager
+    );
+    const propertiesProcessor = await this._components.tools.get(
+      OBC.IfcPropertiesProcessor
+    );
+    for (const fragmentID in fragmentIdMap) {
+      const fragment = fragmentManager.list[fragmentID];
+      const model = fragment.mesh.parent;
+      if (!(model instanceof FragmentsGroup && model.properties)) {
+        continue;
+      }
+      const properties = model.properties;
+      const modelIndexMap = propertiesProcessor.get()[model.uuid];
+      if (!modelIndexMap) {
+        continue;
+      }
+      const expressIDs = fragmentIdMap[fragmentID];
+      for (const expressID of expressIDs) {
+        const entityMap = modelIndexMap[Number(expressID)];
+        if (!entityMap) {
+          continue;
         }
-    }
-
-    async sumQuantities(fragmentIdMap: OBC.FragmentIdMap) {
-        const fragmentManager = await this._components.tools.get(OBC.FragmentManager)
-        const propertiesProcessor = await this._components.tools.get(OBC.IfcPropertiesProcessor)
-        for (const fragmentID in fragmentIdMap) {
-            const fragment = fragmentManager.list[fragmentID]
-            const model = fragment.mesh.parent
-            if (!(model instanceof FragmentsGroup && model.properties)) {
-                continue
+        for (const mapID of entityMap) {
+          const entity = properties[mapID];
+          const { name: setName } = OBC.IfcPropertiesUtils.getEntityName(
+            properties,
+            mapID
+          );
+          if (!(entity.type === WEBIFC.IFCELEMENTQUANTITY && setName)) {
+            continue;
+          }
+          if (!(setName in this._qtoResult)) {
+            this._qtoResult[setName] = {};
+          }
+          OBC.IfcPropertiesUtils.getQsetQuantities(
+            properties,
+            mapID,
+            (qtoID) => {
+              const { name: qtoName } = OBC.IfcPropertiesUtils.getEntityName(
+                properties,
+                qtoID
+              );
+              const { value } = OBC.IfcPropertiesUtils.getQuantityValue(
+                properties,
+                qtoID
+              );
+              if (!(qtoName && value)) {
+                return;
+              }
+              if (!(qtoName in this._qtoResult[setName])) {
+                this._qtoResult[setName][qtoName] = 0;
+              }
+              this._qtoResult[setName][qtoName] += value;
             }
-            const properties = model.properties
-            const modelIndexMap = propertiesProcessor.get()[model.uuid]
-            if (!modelIndexMap) {
-                continue
-            }
-            const expressIDs = fragmentIdMap[fragmentID]
-            for (const expressID of expressIDs) {
-                const entityMap = modelIndexMap[Number(expressID)]
-                if (!entityMap) {
-                    continue
-                }
-                for (const mapID of entityMap) {
-                    const entity = properties[mapID]
-                    const { name: setName } = OBC.IfcPropertiesUtils.getEntityName(properties, mapID)
-                    if (!(entity.type === WEBIFC.IFCELEMENTQUANTITY && setName)) {
-                        continue
-                    }
-                    if (!(setName in this._qtoResult)) {
-                        this._qtoResult[setName] = {}
-                    }
-                    OBC.IfcPropertiesUtils.getQsetQuantities(properties, mapID, (qtoID) => {
-                        const { name: qtoName } = OBC.IfcPropertiesUtils.getEntityName(properties, qtoID)
-                        const { value } = OBC.IfcPropertiesUtils.getQuantityValue(properties, qtoID)
-                        if (!(qtoName && value)) {
-                            return
-                        }
-                        if (!(qtoName in this._qtoResult[setName])) {
-                            this._qtoResult[setName][qtoName] = 0
-                        }
-                        this._qtoResult[setName][qtoName] += value
-                    })
-                }
-            }
+          );
         }
-        await this.updateQtoUI()
+      }
     }
+    this.createTree();
+  }
 
-    async dispose() {
-        const highlighter = await this._components.tools.get(OBC.FragmentHighlighter)
-        highlighter.events.select.onHighlight.remove(this.sumQuantities)
-        this.uiElement.dispose()
-        this.resetQto()
+  createTree() {
+    const qtoList = this.uiElement.get("qtoList");
+    for (const key of Object.keys(this._qtoResult)) {
+      const query = new QtoQuery(this._components);
+      query.setName = key;
+      query.domElement.style.padding = "5px 0";
+      query.domElement.style.fontSize = "20px";
+      qtoList.addChild(query);
+      for (const queryKey of Object.keys(this._qtoResult[key])) {
+        const value = this._qtoResult[key][queryKey];
+        const valueString = value.toFixed(3);
+        const detailElement = new OBC.SimpleUIComponent(
+          this._components,
+          `<div style="display:flex; justify-content: space-between;" >${queryKey}:<div style="font-style:italic">${valueString}</div></div>`
+        );
+        detailElement.domElement.style.padding = "0 10px";
+        detailElement.domElement.style.fontSize = "16px";
+        query.slots.qtoName.addChild(detailElement);
+      }
     }
+  }
 
-    resetQto() {
-        this._qtoResult = {}
-        const qtoWindow = this.uiElement.get("qtoList")
-        qtoWindow.slots.content.dispose(true)
-    }
-
-    get(): QtoResult {
-        return this._qtoResult
-    }
+  get(): QtoResult {
+    return this._qtoResult;
+  }
+  async dispose() {
+    await this.resetQuantities();
+    await this.uiElement.dispose();
+  }
 }

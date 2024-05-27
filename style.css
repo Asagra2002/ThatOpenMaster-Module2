@@ -1,16 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
 :root {
-    /* Colors */
-    --primary: #eeaa6e;
+    --primary: #029AE0;
     --primary-100: #073044;
-    --primary-200: #415a66;
+    --primary-200: #415A66;
     --primary-300: #017CB3;
     --primary-400: #50B6E6;
     --background: #202124;
-    --background-100: #26282B;
-    --background-200: #3B3C3F;
-    /*Fonts*/
+    --background-100: #26282b;
+    --background-200: #3b3c3f;
     --font-xs: 10px;
     --font-sm: 12px;
     --font-base: 14px;
@@ -18,47 +16,48 @@
     --font-xl: 18px;
     --font-2xl: 20px;
     --font-3xl: 22px;
-    
-}
-
-* {
-    font-family: 'Inter', sans-serif; 
-    margin: 0; 
-    padding: 0; 
-}
-
-body {
-    display: grid; 
-    grid-template-columns: 300px 1fr; 
-    grid-template-areas: 'sidebar content'; 
-    height: 100vh; 
-    background-color: var(--background); 
+  }
+  
+  * {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: var(--font-base);
+  }
+  
+  #app {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-areas: 'sidebar content';
+    height: 100vh;
+    background-color: var(--background);
     color: #fff;
-}
-
-/* General styles */
-
-h2 {
+  }
+  
+  
+  /* General Styles */
+  
+  h2 {
     font-size: var(--font-3xl)
-}
-
-h3 {
+  }
+  
+  h3 {
     font-size: var(--font-2xl)
-}
-
-h4 {
+  }
+  
+  h4 {
     font-size: var(--font-xl)
-}
-
-h5 {
+  }
+  
+  h5 {
     font-size: var(--font-lg)
-}
-
-button {
+  }
+  
+  button {
     padding: 8px 15px;
     cursor: pointer;
     height: 40px;
-    font-size: var(--font-sm);
+    font-size: 14px;
     background-color: var(--primary);
     color: white;
     border-radius: 100px;
@@ -66,399 +65,213 @@ button {
     display: flex;
     align-items: center;
     column-gap: 5px;
-}
-
-button:hover{
+  }
+  
+  button:hover {
     background-color: var(--primary-400);
-}
-
-#error{
-    color:white
-}
-
-#errorMessage{
-    background-color:var(--background-200);
-    padding: 1rem;
-    border-radius: 5px;
-    display: block;
-    text-align: center; 
-    border: 2px solid #ccc;
-}
-
-#errorMessage .material-icons-round { 
-    background-color: var(--primary);
-    border-radius: 1rem
-}
-
-#btnError {
-    display: block; 
-    margin: auto; 
-}
-
-.page {
+  }
+  
+  .page {
     display: flex;
     flex-direction: column;
     height: 100%;
-}
-#btnError{
-    display: block;
-    margin:auto;
-    margin-top: 1rem;
-    
-}
-
-/* Sidebar styles */
-
-#sidebar {
+  }
+  
+  /* Sidebar styles */
+  
+  #sidebar {
     background-color: var(--background-100);
     padding: 25px;
     display: flex;
     flex-direction: column;
     row-gap: 40px;
-    margin-bottom: 10px;
-}
-
-#company-logo {
-    height: 65px; 
-}
-
-#nav-buttons{
+  }
+  
+  #company-logo {
+      height: 65px;
+  }
+  
+  #nav-buttons {
     display: flex;
     flex-direction: column;
     row-gap: 15px;
-}
-
-#nav-buttons li {
+  }
+  
+  #nav-buttons li {
     list-style-type: none;
-    padding: 10px;
+    padding: 15px;
     border-radius: 10px;
-    font-size: var(--font-sm);
+    font-size: 14px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    column-gap: 15px;
-    width: 90%;
-}
-
-ul#nav-buttons{
-    display: flex; 
-    align-items:flex-start;
-    justify-content: space-between; 
-    list-style: none;
-}
-
-#nav-buttons li:hover{
+    column-gap: 10px;
+  }
+  
+  #nav-buttons li:hover {
     background-color: var(--primary);
-}
-/* Content styles */
-
-#content {
-    background-color: var(--bacground-100);
-}
-
-header {
+  }
+  
+  /* Content styles */
+  
+  header {
     padding: 30px 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-}
-
-.project-card{
+  }
+  
+  .project-card {
     background-color: var(--background-100);
     border-radius: 8px;
     cursor: pointer;
-}
-
-.project-card:hover{
+  }
+  
+  .project-card:hover {
     outline: 2px solid var(--primary);
-}
-
-.card-header{
+  }
+  
+  .card-header {
     display: flex;
     column-gap: 20px;
     padding: 15px 20px;
-    align-items: center;
+    align-items: center; 
     justify-content: start;
-    border-bottom: 2px solid #3B3C3F;
-    height: 60px;
-}
-
-.card-content{
+    border-bottom: 2px solid #3b3c3f;
+  }
+  
+  .card-content {
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
     row-gap: 20px;
     align-items: start;
-}
-
-.card-property{
+  }
+  
+  .card-property {
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-}
-
-#project-list{
+  }
+  
+  #projects-list {
     display: grid;
     padding: 20px 40px;
     gap: 30px;
-    grid-template-columns: repeat(auto-fill,minmax(350px, 1fr));
-    grid-gap: 10px;
-}
-
-/* Form styles */
-
-dialog {
-    background-color: transparent;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  }
+  
+  .action-icon {
+    color: darkgray;
+    border-radius: 100%;
+    padding: 4px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .action-icon:hover {
+    color: white;
+    background-color: var(--primary);
+  }
+  
+  /* Form Styles */
+  
+  dialog {
+    background-color: transparent; 
     border: none;
-    margin: auto;
-}
-
-dialog::backdrop {
-    background-color: rgb(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px)
-}
-
-
-form {
-    width: 400px;
-    border-radius: 10px;
+      margin: auto;
+  }
+  
+  dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+  }
+  
+  form {
+    width: 450px; 
+    border-radius: 10px; 
     background-color: var(--background-100);
     color: white;
-}
-
-form h2 {
-    padding: 20px;
-    border-bottom: 2px solid var(--background-100);
-}
-
-form .input-list {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
+  }
+  
+  form h2 {
+    padding: 20px; 
+    border-bottom: 2px solid var(--background-200);
+  }
+  
+  form .input-list {
+    display: flex; 
+    flex-direction: column; 
+    padding: 20px; 
     row-gap: 25px;
-}
-
-form.form-fiel-container {
+  }
+  
+  form .form-field-container {
     display: flex;
     flex-direction: column;
-}
-
-label {
+  }
+  
+  label {
     font-size: var(--font-base);
     margin-bottom: 10px;
     font-weight: 500;
-    color: rgb(150, 150, 150,1);
+    color: rgba(150,150,150,1);
     display: flex;
     align-items: center;
     column-gap: 5px;
-}
-
-input, textarea, select {
-    color: white;
-    background-color: var(--background-200);
-    padding: 15px;
-    border-radius: 8px;
+  }
+  
+  input, textarea, select {
+    color: white; 
+      background-color: var(--background-200);
+    padding: 15px; 
+    border-radius: 8px; 
     border: none;
     font-size: var(--font-base);
-}
-
-input:focus, textarea:focus, select:focus {
+  }
+  
+  input:focus, textarea:focus, select:focus {
     outline: 2px solid var(--primary);
-}
-
-/* Edit modal */
-#edit-project-modal {
-    background-color: transparent;
-    border: none;
-    margin: auto;
-    box-shadow: 0 0 100px rgba(0, 0, 0, 0.8); 
-}
-
-#edit-project-modal::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px);
-}
-
-
-#edit-project-form {
-    width: 450px;
-    border-radius: 10px;
-    background-color: var(--background-100);
-    color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-#edit-project-form h2 {
-    padding: 20px;
-    border-bottom: 2px solid var(--background-200);
-}
-
-#edit-project-form .input-list {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    row-gap: 25px;
-}
-
-#edit-project-form .form-field-container {
-    display: flex;
-    flex-direction: column;
-}
-
-#edit-project-form label {
-    font-size: var(--font-base);
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: rgb(241, 241, 241);
-    display: flex;
-    align-items: center;
-    column-gap: 5px;
-}
-
-#edit-project-form input,
-#edit-project-form textarea,
-#edit-project-form select {
-    color: white;
-    background-color: var(--background-200);
-    padding: 15px;
-    border-radius: 8px;
-    border: none;
-    font-size: var(--font-base);
-}
-
-#edit-project-form input:focus,
-#edit-project-form textarea:focus,
-#edit-project-form select:focus {
-    outline: 2px solid var(--primary);
-}
-
-
-/* Project details page*/
-
-.dashboard-card {
+  }
+  
+  /* Project details page */
+  
+  .dashboard-card {
     background-color: var(--background-100);
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-}
-
-#project-details > .main-page-content {
+  }
+  
+  #project-details > .main-page-content {
     display: grid;
     padding: 20px 40px;
     gap: 30px;
     grid-template-columns: 475px 1fr;
     height: 100%;
-}
-
-.btn-secondary {
-    background-color: transparent;
-    outline: 2px solid #969696;
-    width: 100px;
+  }
+  
+  .btn-secondary {
+    background-color: transparent; 
+    outline: 2px solid #969696; 
+    width: 100px; 
     text-align: center;
-}
-
-.btn-secondary:hover {
-    background-color: var(--primary);
+  }
+  
+  .btn-secondary:hover {
+    background-color: var(--primary); 
     outline: none;
-}
-
-#add-todo-btn {
-    background-color: transparent;
-    outline: 2px solid #969696;
-    width: 55px;
-    text-align: center;
-}
-
-#add-todo-btn:hover {
-    background-color: var(--primary);
-    outline: none;
-}
-.todo-item {
+  }
+  
+  .todo-item {
     padding: 20px;
     outline: 2px solid var(--background-200);
     border-radius: 10px;
     cursor: pointer;
-}
-
-.todo-item:hover{
-    background-color: #26282B;
-    outline: 2px solid var(--primary);
-}
-
-.project-icon {
-    font-size: 20px;
-    background-color: #ca8134;
-    border-radius: 100%;
-    padding: 12px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: uppercase;
   }
   
-  /* Edit modal */
-#edit-project-modal {
-    background-color: transparent;
-    border: none;
-    margin: auto;
-    box-shadow: 0 0 100px rgba(0, 0, 0, 0.8); 
-}
-
-#edit-project-modal::backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(3px);
-}
-
-
-#edit-project-form {
-    width: 450px;
-    border-radius: 10px;
-    background-color: var(--background-100);
-    color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-#edit-project-form h2 {
-    padding: 20px;
-    border-bottom: 2px solid var(--background-200);
-}
-
-#edit-project-form .input-list {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    row-gap: 25px;
-}
-
-#edit-project-form .form-field-container {
-    display: flex;
-    flex-direction: column;
-}
-
-#edit-project-form label {
-    font-size: var(--font-base);
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: rgb(241, 241, 241);
-    display: flex;
-    align-items: center;
-    column-gap: 5px;
-}
-
-#edit-project-form input,
-#edit-project-form textarea,
-#edit-project-form select {
-    color: white;
-    background-color: var(--background-200);
-    padding: 15px;
-    border-radius: 8px;
-    border: none;
-    font-size: var(--font-base);
-}
-
-#edit-project-form input:focus,
-#edit-project-form textarea:focus,
-#edit-project-form select:focus {
+  .todo-item:hover {
+    background-color: #26282b;
     outline: 2px solid var(--primary);
-}
+  }
