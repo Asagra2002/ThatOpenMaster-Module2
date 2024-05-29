@@ -1,59 +1,130 @@
-import * as OBC from "openbim-components";
+import * as OBC from "openbim-components"
 
 export class TodoCard extends OBC.SimpleUIComponent {
-  onCardDeleted = new OBC.Event<string>();
-  onCardClick = new OBC.Event();
-  slots: {
-    actionButtons: OBC.SimpleUIComponent;
-  };
+    
+    onDelete = new OBC.Event()
+    onCardClick = new OBC.Event()
+    onEdit = new OBC.Event()
+    statusColor: string
+    slots: {
+        actionButtons: OBC.SimpleUIComponent
+    }
 
-  set priority(value: string) {
-    const priorityElement = this.getInnerElement(
-      "priority"
-    ) as HTMLParagraphElement;
-    priorityElement.textContent = value;
-  }
+    set description(value: string) {
+        const descriptionElement = this.getInnerElement("description") as HTMLParagraphElement
+        descriptionElement.textContent = value
+    }
 
-  set visible(value: boolean) {
-    value
-      ? (this.get().style.display = "flex")
-      : (this.get().style.display = "none");
-  }
+    set date(value: Date) {
+        console.log(value)
+        const dateElement = this.getInnerElement("date") as HTMLParagraphElement
+        dateElement.textContent = value.toDateString()
+    }
 
-  set description(value: string) {
-    const descriptionElement = this.getInnerElement(
-      "description"
-    ) as HTMLParagraphElement;
-    descriptionElement.textContent = value;
-  }
-  set date(value: Date) {
-    const dateElement = this.getInnerElement("date") as HTMLParagraphElement;
-    dateElement.textContent = value.toDateString();
-  }
+    
+    set status(value: string) {
+        
+        const statusElement = this.getInnerElement("status") as HTMLParagraphElement
+        if (value == 'active') {
+            statusElement.textContent = 'construction'
+            statusElement.style.backgroundColor = this.statusColor
+        }
+        if (value == 'pending') {
+            statusElement.textContent = 'arrow_forward'
+            statusElement.style.backgroundColor = this.statusColor
+            
+        }
+        if (value == 'finished') {
+            statusElement.textContent = 'done'
+            statusElement.style.backgroundColor = '#686868'
+            
+        }
+        
+    }
+    set priority (value: string) {
+        
+        if (value == 'Low') {
+            this.statusColor = '#8FDB5E'
+            
+        }
+        if (value == 'Medium') {
+            this.statusColor = '#FFA500'
+            
+        }
+        if (value == 'High') {
+            this.statusColor = '#FF0000'
+            
+            
+        }
+    }
+    set count (value: number) {
+        const countElement = this.getInnerElement("count") as HTMLParagraphElement
+        countElement.textContent = value as unknown as string
+        
+    }
+    update(todo: this) {
+        console.log(todo)
+        this.description = todo.description
+        this.priority = todo.priority
+        this.status = todo.status
 
-  constructor(components: OBC.Components) {
-    const template = `
-    <div class="todo-list-item" style="display:flex;justify-content: space-between;align-items: center;color:var(--primary-color); border:1px solid var(--primary-color); border-radius:10px; padding:10px">
-      <div style="display:flex;justify-content: space-between;align-items: center">
-        <p id="materialIcon" todo-list-functions="toggle-active" style="padding:5px 15px 5px 5px"><span class="material-symbols-outlined">
-          handyman
-          </span>
-        </p>
-        <div>
-          <div style="opacity: 0.6; font-size: 0.7rem; display: flex; column-gap: 15px">
-            <p id="date">DATE GOES HERE</p>
-            <p id="priority">PRIORITY GOES HERE</p>
-          </div>
-          <p id="description">TASK GOES HERE</p>
-        </div>
-      </div>
-      <div data-tooeen-slot="actionButtons" style="display:flex" ></div>
-    </div>`;
-    super(components, template);
-    this.get().addEventListener("click", () => {
-      this.onCardClick.trigger();
-    });
-    this.setSlot("actionButtons", new OBC.SimpleUIComponent(this._components));
-    this.slots.actionButtons.domElement.style.display = "flex";
-  }
+    }
+
+
+    constructor(components: OBC.Components) {
+        const template = `
+        
+            <div class="todo-item tooltip" >
+            <div class="" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; column-gap: 15px; align-items: center;">
+                <span id="status" class="material-icons-round trigger" style="padding: 10px; background-color: #686868; border-radius: 10px;">
+                    construction
+                </span>
+                    <div>
+                        <p id="date" style="text-wrap: nowrap; color: #a9a9a9; font-size: var(--font-sm)">
+                            Fri, 20 sep
+                        </p>
+                        <p id="description">
+                            Make anything here as you want, even something longer.
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; column-gap: 15px; align-items: center">
+                
+            
+                    <span id="count"  style="padding: 5px; background-color: #686868; border-radius: 99px;">
+                        1
+                    </span>
+                    <div data-tooeen-slot="actionButtons" style="display: flex; column-gap: 15px; align-items: flex-end;"></div>
+                </div>
+            </div>
+            
+            </div>
+      
+        `
+
+
+        super(components, template)
+        const cardElement = this.get()
+        cardElement.addEventListener("click", () => {
+            console.log("clicked")
+
+            this.onCardClick.trigger()
+        })
+        this.setSlot("actionButtons", new OBC.SimpleUIComponent(this._components))
+        const editBtn = new OBC.Button(this._components)
+        editBtn.materialIcon = "edit"
+        this.slots.actionButtons.addChild(editBtn)
+        editBtn.onClick.add(() => {
+            console.log("setup edit trigger")
+            this.onEdit.trigger()
+        })
+        const deleteBtn = new OBC.Button(this._components)
+        deleteBtn.materialIcon = "delete"
+        this.slots.actionButtons.addChild(deleteBtn)
+        deleteBtn.onClick.add(() => {
+            console.log("Removing...")
+            this.onDelete.trigger()
+        })
+    }
 }

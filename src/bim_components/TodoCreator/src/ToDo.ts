@@ -1,111 +1,175 @@
 import * as OBC from "openbim-components";
-import { generateUUID } from "three/src/math/MathUtils.js";
-import * as THREE from "three";
 import { TodoCard } from "./TodoCard";
-import { TodoCreator } from "..";
+import * as THREE from "three";
+import { v4 as uuidv4 } from 'uuid';
+import { Status } from "../../../types/types";
+import { parseFragmentIdMap, showModal } from "../../../utils/utils";
+import { updateDocument } from "../../../firebase";
+import TWEEN from '@tweenjs/tween.js';
 
-export type TodoPriority = "Low" | "Normal" | "High";
+export type ToDoPriority = "Low" | "Medium" | "High";
 
-export class ToDo extends OBC.Component<ToDo> implements OBC.Disposable {
-  enabled: boolean = true;
-  private _components: OBC.Components;
-  //Own Properties
-  id: string = generateUUID();
-  description: string;
-  date: Date = new Date();
-  priority: TodoPriority;
-  camera: { position: THREE.Vector3; target: THREE.Vector3 } = {
-    position: new THREE.Vector3(),
-    target: new THREE.Vector3(),
-  };
-  fragmentMap: OBC.FragmentIdMap;
-  card: TodoCard;
+interface TodoCamera {
+    position: THREE.Vector3;
+    target: THREE.Vector3;
+}
 
-  constructor(
-    components: OBC.Components,
-    description: string,
-    priority: TodoPriority
-  ) {
-    super(components);
-    this._components = components;
-    this.description = description;
-    this.priority = priority;
-    this.setup();
-    this.createCard();
-  }
+interface TodoConstructorArgs {
+    description: string;
+    date: Date;
+    status: Status;
+    priority: ToDoPriority;
+    projectId: string;
+    fragmentMap?: OBC.FragmentIdMap;
+    todoCamera?: TodoCamera;
+    id?: string;
+}
 
-  private async setup() {
-    const highlighter = await this._components.tools.get(
-      OBC.FragmentHighlighter
-    );
-    const camera = this._components.camera;
-    if (!(camera instanceof OBC.OrthoPerspectiveCamera))
-      return console.warn("OrthoPerspective Camera is not found!");
-    const position = new THREE.Vector3();
-    const target = new THREE.Vector3();
-    camera.controls.getPosition(position);
-    camera.controls.getTarget(target);
-    this.camera.position.x = position.x;
-    this.camera.position.y = position.y;
-    this.camera.position.z = position.z;
-    this.camera.target.x = target.x;
-    this.camera.target.y = target.y;
-    this.camera.target.z = target.z;
-    this.fragmentMap = highlighter.selection.select;
-  }
+export class Todo extends OBC.Component<null> {
+    onEditConfirm = new OBC.Event();
+    description: string;
+    date: Date;
+    fragmentMap: OBC.FragmentIdMap;
+    camera: OBC.OrthoPerspectiveCamera;
+    todoCamera: TodoCamera;
+    status: Status;
+    priority: ToDoPriority;
+    id: string;
+    private _components: OBC.Components;
+    enabled = true;
+    projectId: string;
+    TodoCard: TodoCard;
+    highlighter: OBC.FragmentHighlighter;
 
-  async createCard() {
-    const todoCard = new TodoCard(this._components);
-    this.card = todoCard;
-    this.card.description = this.description;
-    this.card.date = this.date;
-    this.card.priority = this.priority;
+    constructor(components: OBC.Components, {
+        description,
+        date,
+        status,
+        priority,
+        projectId,
+        fragmentMap,
+        todoCamera,
+        id
+    }: TodoConstructorArgs) {
+        super(components);
+        this._components = components;
+        this.fragmentMap = fragmentMap ?? {}; // Handle case when fragmentMap is not provided
+        this.id = id ?? uuidv4();
+        this.status = status;
+        this.projectId = projectId;
 
-    const highlighter = await this._components.tools.get(
-      OBC.FragmentHighlighter
-    );
+        const camera = this._components.camera;
+        if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
+            throw new Error("TodoCreator needs the Ortho Perspective Camera in order to work!");
+        }
 
-    const camera = this._components.camera;
-    if (!(camera instanceof OBC.OrthoPerspectiveCamera))
-      return console.warn(
-        "This operation requires an active OrthoPerspective Camera"
-      );
+        const position = new THREE.Vector3();
+        camera.controls.getPosition(position);
+        const target = new THREE.Vector3();
+        camera.controls.getTarget(target);
+        this.camera = camera;
 
-    this.card.onCardClick.add(async () => {
-      await camera.fit();
-      try {
-        await highlighter.highlightByID("select", this.fragmentMap);
-      } catch (error) {
-        console.log("To-do has no fragments assigned.");
-      }
-      camera.controls.setLookAt(
-        this.camera.position.x,
-        this.camera.position.y,
-        this.camera.position.z,
-        this.camera.target.x,
-        this.camera.target.y,
-        this.camera.target.z,
-        true
-      );
-    });
+        this.todoCamera = todoCamera ?? { position, target };
+        this.description = description;
+        this.date = date;
+        this.priority = priority;
 
-    const deleteButton = new OBC.Button(this._components);
-    deleteButton.materialIcon = "delete";
+        this.TodoCard = new TodoCard(components);
+        this.TodoCard.priority = this.priority;
+        this.TodoCard.status = this.status;
+        this.TodoCard.description = this.description;
+        this.TodoCard.date = this.date;
+    }
 
-    this.card.slots.actionButtons.addChild(deleteButton);
-    deleteButton.onClick.add(async () => {
-      await this.dispose();
-    });
-  }
+    get(...args: any[]): null {
+        return null;
+    }
 
-  get(): ToDo {
-    return this;
-  }
-  async dispose() {
-    const creator = await this._components.tools.get(TodoCreator);
-    this.card.enabled = false;
-    await this.card.dispose();
-    this.enabled = false;
-    creator.updateList();
-  }
+    editTodo(editForm: any): void {
+        this.description = editForm.slots.content.children[0].value;
+        this.priority = editForm.slots.content.children[1].value;
+        this.status = editForm.slots.content.children[2].value;
+
+        this.TodoCard.description = this.description;
+        this.TodoCard.priority = this.priority;
+        this.TodoCard.status = this.status;
+        this.TodoCard.date = this.date;
+
+        this.updateDatabase();
+        editForm.visible = false;
+        editForm.slots.content.children[0].value = "";
+        editForm.slots.content.children[1].value = "";
+        editForm.slots.content.children[2].value = "";
+    }
+
+    updateDatabase(): void {
+        updateDocument("/todos", this.id, {
+            description: this.description,
+            status: this.status,
+            priority: this.priority
+        });
+    }
+
+    setupEditForm(editForm: any): void {
+        editForm.visible = true;
+        editForm.slots.content.children[0].value = this.description;
+        editForm.slots.content.children[1].value = this.priority;
+        editForm.slots.content.children[2].value = this.status;
+    }
+
+    async setupOnClick(editForm: any): Promise<void> {
+        this.highlighter = await this._components.tools.get(OBC.FragmentHighlighter);
+
+        if (!this.fragmentMap) {
+            this.fragmentMap = this.highlighter.selection.select;
+        }
+        this.TodoCard.count = this.fragmentMap[Object.keys(this.fragmentMap)[0]].size;
+
+        this.TodoCard.onEdit.add(() => {
+            this.setupEditForm(editForm);
+        });
+
+        this.TodoCard.onCardClick.add(() => {
+            const position = new THREE.Vector3();
+            this.camera.controls.getPosition(position);
+            const startPosition = {
+                x: position.x,
+                y: position.y,
+                z: position.z
+            };
+
+            const targetPosition = {
+                x: this.todoCamera.position.x,
+                y: this.todoCamera.position.y,
+                z: this.todoCamera.position.z
+            };
+
+            new TWEEN.Tween(startPosition)
+                .to(targetPosition, 1000)
+                .easing(TWEEN.Easing.Quadratic.Out)
+                .onUpdate(() => {
+                    this.camera.controls.setLookAt(
+                        startPosition.x,
+                        startPosition.y,
+                        startPosition.z,
+                        this.todoCamera.target.x,
+                        this.todoCamera.target.y,
+                        this.todoCamera.target.z
+                    );
+                })
+                .onComplete(() => {
+                    console.log("Tween complete!");
+                })
+                .start();
+
+            const fragmentMapLength = Object.keys(this.fragmentMap).length;
+            if (fragmentMapLength === 0) { return; }
+            this.highlighter.highlightByID("select", this.fragmentMap);
+        });
+    }
+
+    async setupSelection(): Promise<void> {
+        this.highlighter = await this._components.tools.get(OBC.FragmentHighlighter);
+        this.fragmentMap = this.highlighter.selection.select;
+    }
 }

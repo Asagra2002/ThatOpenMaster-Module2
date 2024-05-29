@@ -1,8 +1,9 @@
 import * as React from "react"
 import * as OBC from "openbim-components"
 import { FragmentsGroup } from "bim-fragment"
-import { TodoCreator } from "../bim_components/TodoCreator/index.ts"
+import { Project, TodoCreator } from "../bim_components/TodoCreator/index.ts"
 import { SimpleQto } from "../bim_components/SimpleQTO/index.ts"
+import { IProject } from "../class/Project.ts"
 
 
 interface IViewerContext {
@@ -201,25 +202,37 @@ export function IFCviewer() {
         if (!filesList) { return }
         reader.readAsArrayBuffer(filesList[0])
       })
-      input.click()
-    })
-  
-    const todoCreator = new TodoCreator(viewer)
-    await todoCreator.setup()
-  
-    const simpleQto = new SimpleQto(viewer)
-    await simpleQto.setup()
-  
-    const propsFinder = new OBC.IfcPropertiesFinder(viewer)
-    await propsFinder.init()
+      input.click();
+    });
+
+    // Provide the required data for the Project constructor
+    const projectData: IProject = {
+      // populate with appropriate values
+      name: "Sample Project",
+      cost: undefined,
+      progress: undefined,
+      description: "",
+      status: "Pending",
+      userRole: "Architect",
+      finishDate: new Date(),
+    };
+    const setupProject: Project = new Project(projectData);
+    const todoCreator = new TodoCreator(viewer);
+    await todoCreator.setup(setupProject);
+
+    const simpleQto = new SimpleQto(viewer);
+    await simpleQto.setup();
+
+    const propsFinder = new OBC.IfcPropertiesFinder(viewer);
+    await propsFinder.init();
     propsFinder.onFound.add((FragmentIDMap) => {
-        highlighter.highlightByID("select", FragmentIDMap)
-    })
-  
+      highlighter.highlightByID("select", FragmentIDMap);
+    });
+
     todoCreator.onProjectCreated.add((todo) => {
-      console.log(todo)
-    }) 
-    
+      console.log(todo);
+    });
+
     const toolbar = new OBC.Toolbar(viewer)
     toolbar.addChild(
       ifcLoader.uiElement.get("main"),

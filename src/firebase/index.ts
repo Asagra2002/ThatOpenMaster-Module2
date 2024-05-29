@@ -34,7 +34,8 @@ export function updateDocument<T extends Record<string, any>>(collectionPath: st
   const doc = Firestore.doc(firestoreDB, `${collectionPath}/${id}`)
   Firestore.updateDoc(doc, data)
 }
-
-
-
-
+export async function addDocument<T extends Record<string, any>>(collectionPath: string, data: T) {
+  const result = await Firestore.addDoc(getCollection(collectionPath),data)
+  console.log(result)
+  return result.id
+}

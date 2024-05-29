@@ -8,7 +8,7 @@ export function Sidebar() {
   const createTodo = async () => {
     if (!viewer) { return }
     const todoCreator = await viewer.tools.get(TodoCreator)
-    todoCreator.addTodo("My Custom todo", "Normal")
+    todoCreator.addTodo("My Custom todo", "Low","active")
   }
   return (
     <aside id="sidebar">
